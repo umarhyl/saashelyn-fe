@@ -7,11 +7,54 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, X } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthContext";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { API_URL } from "@/lib/api";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, subtotal } = useCart();
-  const shipping = items.length > 0 ? 50000 : 0;
-  const total = subtotal + shipping;
+  const { isAuthenticated, token } = useAuth();
+  const router = useRouter();
+  const shippingCost = items.length > 0 ? 50000 : 0;
+  const total = subtotal + shippingCost;
+
+  const [formData, setFormData] = useState({
+    firstName: "", lastName: "", address: "", city: "", postalCode: "", shipping: "Signature Express"
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(API_URL + "/orders", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          totalAmount: total,
+          items: items.map(i => ({
+            productId: i.product.id,
+            size: i.size,
+            quantity: i.quantity,
+            price: i.product.price
+          }))
+        })
+      });
+      if (!res.ok) throw new Error("Checkout failed");
+      alert("Order placed successfully!");
+      window.location.href = "/";
+    } catch (err) {
+      alert("Error: " + err);
+    }
+  };
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-background">
@@ -36,7 +79,7 @@ export default function CartPage() {
             
             {/* Checkout Form */}
             <div className="w-full lg:w-3/5 order-2 lg:order-1">
-              <form className="space-y-12">
+              <form onSubmit={handleSubmit} className="space-y-12">
                 
                 {/* Shipping Address */}
                 <div>
@@ -44,23 +87,23 @@ export default function CartPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">First Name</label>
-                      <Input placeholder="e.g. Natalia" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
+                      <Input value={formData.firstName} onChange={e=>setFormData({...formData, firstName: e.target.value})} required placeholder="e.g. Natalia" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Last Name</label>
-                      <Input placeholder="e.g. Sherliz" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
+                      <Input value={formData.lastName} onChange={e=>setFormData({...formData, lastName: e.target.value})} required placeholder="e.g. Sherliz" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
                     </div>
                     <div className="col-span-1 md:col-span-2 space-y-2">
                       <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Street Address</label>
-                      <Input placeholder="1234 Jl. Dr Angka" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
+                      <Input value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} required placeholder="1234 Jl. Dr Angka" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">City</label>
-                      <Input placeholder="Surabaya" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
+                      <Input value={formData.city} onChange={e=>setFormData({...formData, city: e.target.value})} required placeholder="Surabaya" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Postal Code</label>
-                      <Input placeholder="55018" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
+                      <Input value={formData.postalCode} onChange={e=>setFormData({...formData, postalCode: e.target.value})} required placeholder="55018" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light" />
                     </div>
                   </div>
                 </div>
@@ -117,8 +160,8 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Button size="lg" className="w-full rounded-none h-14 uppercase tracking-widest font-light" type="button">
-                  Complete Purchase
+                <Button size="lg" className="w-full rounded-none h-14 uppercase tracking-widest font-light" type="submit">
+                  {isAuthenticated ? "Complete Purchase" : "Sign In to Complete Purchase"}
                 </Button>
               </form>
             </div>
@@ -191,7 +234,7 @@ export default function CartPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground uppercase tracking-widest text-[10px]">Shipping</span>
-                    <span>Rp {shipping.toLocaleString("id-ID")}</span>
+                    <span>Rp {shippingCost.toLocaleString("id-ID")}</span>
                   </div>
                 </div>
 

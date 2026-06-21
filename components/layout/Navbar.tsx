@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Menu, X, Search } from "lucide-react";
+import { ShoppingBag, Menu, X, Search, User } from "lucide-react";
 import { useCart } from "@/components/cart/CartContext";
+import { useAuth } from "@/components/auth/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
@@ -19,6 +20,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { setIsCartOpen, totalItems } = useCart();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,6 +66,11 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
+          {isAdmin && (
+            <Link href="/admin" className="text-sm font-light tracking-widest uppercase transition-colors hover:text-foreground/70 text-foreground/80">
+              Admin
+            </Link>
+          )}
         </nav>
 
         {/* Logo */}
@@ -78,6 +85,9 @@ export function Navbar() {
           <button aria-label="Search" className="hidden md:block text-foreground/80 hover:text-foreground transition-colors">
             <Search className="w-5 h-5 font-light" />
           </button>
+          <Link href={isAuthenticated ? "/profile" : "/login"} aria-label="Account" className="hidden md:block text-foreground/80 hover:text-foreground transition-colors">
+            <User className="w-5 h-5 font-light" />
+          </Link>
           <button
             onClick={() => setIsCartOpen(true)}
             className="relative p-2 -mr-2 text-foreground/80 hover:text-foreground transition-colors"
@@ -132,6 +142,20 @@ export function Navbar() {
                     {link.name}
                   </Link>
                 ))}
+                {isAdmin && (
+                  <Link href="/admin" className="text-lg font-light tracking-wider uppercase text-foreground/80">
+                    Admin
+                  </Link>
+                )}
+                {isAuthenticated ? (
+                  <Link href="/profile" className="text-lg font-light tracking-wider uppercase text-foreground/80">
+                    My Account
+                  </Link>
+                ) : (
+                  <Link href="/login" className="text-lg font-light tracking-wider uppercase text-foreground/80">
+                    Sign In
+                  </Link>
+                )}
               </nav>
             </motion.div>
           </>

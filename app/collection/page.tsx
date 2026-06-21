@@ -1,18 +1,56 @@
 "use client";
 
-import { useState } from "react";
-import { products } from "@/data/products";
+import { useState, useEffect } from "react";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { Category } from "@/types/product";
+import { Button } from "@/components/ui/button";
+import { API_URL } from "@/lib/api";
 
 const CATEGORIES: Category[] = ["Dress", "Outerwear", "Skirt", "Blouse"];
 
 export default function CollectionPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category | "All">("All");
+  const [products, setProducts] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const filteredProducts = selectedCategory === "All" 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+  const fetchProducts = async (cat: string, p: number, append = false) => {
+    let url = `${API_URL}/products?page=${p}&limit=8`;
+    if (cat !== "All") {
+      url += `&category=${cat}`;
+    }
+    
+    try {
+      const res = await fetch(url);
+      const resData = await res.json();
+      const newData = resData.data || [];
+      
+      if (append) {
+        setProducts(prev => [...prev, ...newData]);
+      } else {
+        setProducts(newData);
+      }
+      
+      if (newData.length < 8) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    setPage(1);
+    fetchProducts(selectedCategory, 1, false);
+  }, [selectedCategory]);
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchProducts(selectedCategory, nextPage, true);
+  };
 
   return (
     <div className="pt-24 pb-24 min-h-screen bg-background">
@@ -54,7 +92,16 @@ export default function CollectionPage() {
         </div>
 
         {/* Product Grid */}
-        <ProductGrid products={filteredProducts} />
+        <ProductGrid products={products} />
+        
+        {/* Load More */}
+        {hasMore && (
+          <div className="mt-16 flex justify-center">
+            <Button onClick={loadMore} variant="outline" className="rounded-none tracking-widest uppercase font-light h-12 px-8">
+              Load More
+            </Button>
+          </div>
+        )}
         
       </div>
     </div>

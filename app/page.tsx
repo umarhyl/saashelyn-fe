@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { products } from "@/data/products";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { fetchProducts } from "@/lib/api";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const products = await fetchProducts();
   const featuredProducts = products.slice(0, 4);
   const bestSellers = products.slice(4, 8);
 

@@ -1,10 +1,11 @@
 "use client";
 
 import { use, useState } from "react";
+import { API_URL } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { products } from "@/data/products";
+import { useEffect } from "react";
 import { useCart } from "@/components/cart/CartContext";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -12,18 +13,40 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const product = products.find(p => p.id === id);
+  const [product, setProduct] = useState<any>(null);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { addItem } = useCart();
   
-  if (!product) {
-    notFound();
-  }
+  useEffect(() => {
+    fetch(`${API_URL}/products/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Not found");
+        return res.json();
+      })
+      .then(data => {
+        setProduct(data);
+        // Fetch all products for related
+        fetch(`${API_URL}/products`)
+          .then(r => r.json())
+          .then(all => {
+            setRelatedProducts(all.filter((p: any) => p.category === data.category && p.id !== data.id).slice(0, 4));
+          });
+      })
+      .catch(() => setProduct(null))
+      .finally(() => setIsLoading(false));
+  }, [id]);
 
-  const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0]);
-  
-  const relatedProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  const [selectedSize, setSelectedSize] = useState<string>("");
+
+  useEffect(() => {
+    if (product && product.sizes && product.sizes.length > 0) {
+      setSelectedSize(product.sizes[0]);
+    }
+  }, [product]);
+
+  if (isLoading) return <div className="min-h-screen pt-32 text-center">Loading...</div>;
+  if (!product) return notFound();
 
   const handleAddToCart = () => {
     addItem(product, selectedSize, 1);
@@ -80,7 +103,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 </button>
               </div>
               <div className="flex flex-wrap gap-3">
-                {product.sizes.map(size => (
+                {product.sizes.map((size: string) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}

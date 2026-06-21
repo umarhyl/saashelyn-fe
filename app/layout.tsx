@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { CartProvider } from "@/components/cart/CartContext";
+import { AuthProvider } from "@/components/auth/AuthContext";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
@@ -40,14 +41,16 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <CartProvider>
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <CartDrawer />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <CartDrawer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
