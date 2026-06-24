@@ -5,6 +5,7 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 import { Category } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/api";
+import { FadeIn } from "@/components/ui/FadeIn";
 
 const CATEGORIES: Category[] = ["Dress", "Outerwear", "Skirt", "Blouse"];
 
@@ -57,14 +58,16 @@ export default function CollectionPage() {
       <div className="container mx-auto px-4 md:px-8">
         
         {/* Header */}
-        <div className="text-center mb-16 mt-8">
-          <h1 className="font-heading text-4xl md:text-5xl font-normal tracking-wide mb-4">
-            The Collection
-          </h1>
-          <p className="font-light tracking-wide text-muted-foreground uppercase text-sm max-w-lg mx-auto">
-            Discover our curated selection of premium modest fashion, designed for the modern elegant woman.
-          </p>
-        </div>
+        <FadeIn direction="up">
+          <div className="text-center mb-16 mt-8">
+            <h1 className="font-heading text-4xl md:text-5xl font-normal tracking-wide mb-4">
+              The Collection
+            </h1>
+            <p className="font-light tracking-wide text-muted-foreground uppercase text-sm max-w-lg mx-auto">
+              Discover our curated selection of premium modest fashion, designed for the modern elegant woman.
+            </p>
+          </div>
+        </FadeIn>
 
         {/* Filters */}
         <div className="flex justify-center mb-12 overflow-x-auto pb-4 hide-scrollbar">
@@ -92,7 +95,9 @@ export default function CollectionPage() {
         </div>
 
         {/* Product Grid */}
-        <ProductGrid products={products} />
+        <FadeIn delay={0.2}>
+          <ProductGrid products={products} />
+        </FadeIn>
         
         {/* Load More */}
         {hasMore && (
