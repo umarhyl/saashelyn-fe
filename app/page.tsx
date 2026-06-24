@@ -101,17 +101,19 @@ export default async function Home() {
       </section>
 
       {/* Best Sellers */}
-      <section className="py-24 px-4 md:px-8 bg-background">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-wide mb-4">Best Sellers</h2>
-            <p className="font-light tracking-wide text-muted-foreground uppercase text-sm">
-              Our most loved pieces
-            </p>
+      {bestSellers.length > 0 && (
+        <section className="py-24 px-4 md:px-8 bg-background">
+          <div className="container mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-wide mb-4">Best Sellers</h2>
+              <p className="font-light tracking-wide text-muted-foreground uppercase text-sm">
+                Our most loved pieces
+              </p>
+            </div>
+            <ProductGrid products={bestSellers} />
           </div>
-          <ProductGrid products={bestSellers} />
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
