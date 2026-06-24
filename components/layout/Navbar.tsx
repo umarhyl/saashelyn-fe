@@ -119,7 +119,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 w-4/5 max-w-sm h-full bg-background/95 backdrop-blur-xl border-r border-border/50 z-50 p-8 shadow-2xl flex flex-col md:hidden"
+              className="fixed top-0 left-0 w-4/5 max-w-sm h-full bg-[#F6F3ED]/95 dark:bg-[#111111]/95 backdrop-blur-xl border-r border-border/50 z-50 p-8 shadow-2xl flex flex-col md:hidden"
             >
               <div className="flex justify-between items-center mb-12">
                 <h2 className="font-heading text-xl tracking-widest uppercase">Menu</h2>
