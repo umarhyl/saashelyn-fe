@@ -13,7 +13,7 @@ import { useState } from "react";
 import { API_URL } from "@/lib/api";
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, subtotal } = useCart();
+  const { items, updateQuantity, removeItem, subtotal, clearCart } = useCart();
   const { isAuthenticated, token } = useAuth();
   const router = useRouter();
   const shippingCost = items.length > 0 ? 50000 : 0;
@@ -49,8 +49,10 @@ export default function CartPage() {
         })
       });
       if (!res.ok) throw new Error("Checkout failed");
-      alert("Order placed successfully!");
-      window.location.href = "/";
+      const resData = await res.json();
+      
+      clearCart();
+      router.push(`/payment/${resData.orderId}`);
     } catch (err) {
       alert("Error: " + err);
     }

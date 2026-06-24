@@ -18,7 +18,8 @@ export default function AdminOverview() {
       fetch(API_URL + "/products").then(res => res.json())
     ]).then(([ordersData, productsData]) => {
       const validOrders = Array.isArray(ordersData) ? ordersData : [];
-      const validProducts = Array.isArray(productsData) ? productsData : [];
+      // Products might come as { data: [...] } due to pagination
+      const validProducts = Array.isArray(productsData) ? productsData : (productsData.data || []);
       
       const rev = validOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
       setStats({
