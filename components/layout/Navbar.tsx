@@ -35,11 +35,25 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  // Disable body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled || isMobileMenuOpen || pathname !== "/"
-          ? "bg-background/90 backdrop-blur-md border-b border-border/40 py-4"
+        isMobileMenuOpen
+          ? "bg-transparent py-4 text-foreground" // Remove backdrop-blur when menu open to fix CSS containing block bug
+          : isScrolled || pathname !== "/"
+          ? "bg-background/90 backdrop-blur-md border-b border-border/40 py-4 text-foreground"
           : "bg-transparent py-6 text-foreground"
       }`}
     >
@@ -119,7 +133,8 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 w-4/5 max-w-sm h-full bg-[#F6F3ED]/95 dark:bg-[#111111]/95 backdrop-blur-xl border-r border-border/50 z-50 p-8 shadow-2xl flex flex-col md:hidden"
+              className="fixed top-0 left-0 w-full h-screen border-r border-border/50 z-50 p-8 flex flex-col md:hidden"
+              style={{ backgroundColor: "#F6F3ED" }}
             >
               <div className="flex justify-between items-center mb-12">
                 <h2 className="font-heading text-xl tracking-widest uppercase">Menu</h2>
