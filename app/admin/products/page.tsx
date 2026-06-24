@@ -25,8 +25,9 @@ export default function AdminProducts() {
 
   const fetchProducts = async () => {
     const res = await fetch(`${API_URL}/products`);
-    const data = await res.json();
-    setProducts(Array.isArray(data) ? data : []);
+    const json = await res.json();
+    // The backend returns { data: [...], meta: {...} }
+    setProducts(json.data || []);
   };
 
   useEffect(() => {
