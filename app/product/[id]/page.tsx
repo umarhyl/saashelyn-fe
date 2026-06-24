@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useCart } from "@/components/cart/CartContext";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { FadeIn } from "@/components/ui/FadeIn";
 import { ProductGrid } from "@/components/product/ProductGrid";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -68,7 +69,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         {/* Product Details Section */}
         <div className="flex flex-col md:flex-row gap-12 lg:gap-24 mb-24">
           {/* Images */}
-          <div className="w-full md:w-1/2">
+          <FadeIn direction="right" className="w-full md:w-1/2">
             <div className="relative aspect-[3/4] bg-muted/30 rounded-sm overflow-hidden">
               <Image
                 src={product.image}
@@ -79,10 +80,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
-          </div>
+          </FadeIn>
 
           {/* Info */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center">
+          <FadeIn direction="left" className="w-full md:w-1/2 flex flex-col justify-center">
             <h1 className="font-heading text-3xl md:text-4xl font-normal mb-4">{product.name}</h1>
             <p className="text-xl font-light mb-8">
               Rp {product.price.toLocaleString("id-ID")}
@@ -154,15 +155,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-          </div>
+          </FadeIn>
         </div>
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="border-t border-border/50 pt-24">
+          <FadeIn direction="up" className="border-t border-border/50 pt-24">
             <h2 className="font-heading text-3xl font-normal text-center mb-16">You May Also Like</h2>
             <ProductGrid products={relatedProducts} />
-          </div>
+          </FadeIn>
         )}
       </div>
     </div>

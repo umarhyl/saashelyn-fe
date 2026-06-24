@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { LogOut, Package, User, CheckCircle2, Clock } from "lucide-react";
 import { API_URL } from "@/lib/api";
+import { FadeIn } from "@/components/ui/FadeIn";
 
 type TabType = "orders" | "settings";
 
@@ -119,15 +120,15 @@ export default function ProfilePage() {
     <div className="pt-32 pb-24 min-h-screen bg-background">
       <div className="container mx-auto px-4 md:px-8 max-w-5xl">
         
-        <div className="mb-12">
+        <FadeIn direction="up" className="mb-12">
           <h1 className="font-heading text-4xl mb-2">My Account</h1>
           <p className="text-muted-foreground font-light">Welcome back, {user.name}</p>
-        </div>
+        </FadeIn>
 
         <div className="flex flex-col md:flex-row gap-12">
           
           {/* Sidebar */}
-          <aside className="w-full md:w-64 flex-shrink-0">
+          <FadeIn direction="right" className="w-full md:w-64 flex-shrink-0">
             <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-4 md:pb-0">
               <button
                 onClick={() => setActiveTab("orders")}
@@ -159,10 +160,10 @@ export default function ProfilePage() {
                 Logout
               </button>
             </nav>
-          </aside>
+          </FadeIn>
 
           {/* Content */}
-          <main className="flex-1">
+          <FadeIn direction="left" delay={0.2} className="flex-1">
             
             {/* ORDERS TAB */}
             {activeTab === "orders" && (
@@ -268,7 +269,7 @@ export default function ProfilePage() {
               </div>
             )}
             
-          </main>
+          </FadeIn>
         </div>
       </div>
     </div>

@@ -2,23 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FadeIn } from "@/components/ui/FadeIn";
 
 export default function ContactPage() {
   return (
     <div className="pt-32 pb-24 min-h-screen bg-background">
       <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         
-        <div className="text-center mb-20">
+        <FadeIn direction="up" className="text-center mb-20">
           <h1 className="font-heading text-4xl md:text-5xl font-normal tracking-wide mb-6">Contact Us</h1>
           <p className="font-light tracking-wide text-muted-foreground uppercase text-sm max-w-2xl mx-auto leading-relaxed">
             We invite you to reach out for any inquiries regarding our collections, your orders, or our atelier.
           </p>
-        </div>
+        </FadeIn>
 
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
           
           {/* Contact Info */}
-          <div className="w-full lg:w-1/3 space-y-12">
+          <FadeIn direction="left" className="w-full lg:w-1/3 space-y-12">
             <div>
               <h3 className="font-heading text-xl font-normal mb-4">Client Services</h3>
               <p className="font-light text-muted-foreground leading-relaxed mb-2">
@@ -44,10 +45,10 @@ export default function ContactPage() {
                 Indonesia
               </p>
             </div>
-          </div>
+          </FadeIn>
 
           {/* Contact Form */}
-          <div className="w-full lg:w-2/3">
+          <FadeIn direction="right" className="w-full lg:w-2/3">
             <form className="space-y-8 bg-secondary/10 p-8 md:p-12 border border-border/50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
@@ -81,7 +82,7 @@ export default function ContactPage() {
                 Send Message
               </Button>
             </form>
-          </div>
+          </FadeIn>
 
         </div>
       </div>

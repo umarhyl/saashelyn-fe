@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { fetchProducts } from "@/lib/api";
+import { FadeIn } from "@/components/ui/FadeIn";
 
 export default async function Home() {
   const products = await fetchProducts();
@@ -25,7 +26,7 @@ export default async function Home() {
           <div className="absolute inset-0 bg-background/20" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-12 mt-20">
+        <FadeIn direction="up" className="container relative z-10 mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-12 mt-20">
           <div className="flex-1 text-left">
             <p className="text-sm tracking-[0.3em] uppercase mb-6 font-medium text-foreground/80">
               The New Season
@@ -54,64 +55,70 @@ export default async function Home() {
               />
             </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Featured Collection */}
       <section className="py-24 px-4 md:px-8 bg-background">
-        <div className="container mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-wide">Featured Collection</h2>
-            </div>
-            <Link
-              href="/collection"
-              className="hidden md:inline-block text-sm tracking-widest uppercase font-medium border-b border-foreground/30 hover:border-foreground pb-1 transition-colors"
-            >
-              Shop All
-            </Link>
-          </div>
-          <ProductGrid products={featuredProducts} />
-
-          <div className="mt-12 text-center md:hidden">
-            <Link href="/collection">
-              <Button variant="outline" className="tracking-widest uppercase font-light w-full">
+        <FadeIn direction="up">
+          <div className="container mx-auto">
+            <div className="flex justify-between items-end mb-12">
+              <div>
+                <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-wide">Featured Collection</h2>
+              </div>
+              <Link
+                href="/collection"
+                className="hidden md:inline-block text-sm tracking-widest uppercase font-medium border-b border-foreground/30 hover:border-foreground pb-1 transition-colors"
+              >
                 Shop All
-              </Button>
-            </Link>
+              </Link>
+            </div>
+            <ProductGrid products={featuredProducts} />
+
+            <div className="mt-12 text-center md:hidden">
+              <Link href="/collection">
+                <Button variant="outline" className="tracking-widest uppercase font-light w-full">
+                  Shop All
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Brand Story */}
       <section className="py-24 px-4 md:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="font-heading text-3xl md:text-5xl font-normal tracking-wide mb-8">
-            Crafted with Intent
-          </h2>
-          <p className="text-lg md:text-xl font-light leading-relaxed text-foreground/80 mb-10 max-w-2xl mx-auto">
-            SAASHELYN embodies the pursuit of permanence through the art of fine tailoring and quiet luxury. Every piece is designed to drape beautifully, move gracefully, and empower the modern woman who embraces modest fashion without compromising on style.
-          </p>
-          <Link href="/about">
-            <Button variant="outline" className="tracking-widest uppercase font-light rounded-none">
-              Discover Our Story
-            </Button>
-          </Link>
-        </div>
+        <FadeIn delay={0.2} direction="up">
+          <div className="container mx-auto max-w-4xl text-center">
+            <h2 className="font-heading text-3xl md:text-5xl font-normal tracking-wide mb-8">
+              Crafted with Intent
+            </h2>
+            <p className="text-lg md:text-xl font-light leading-relaxed text-foreground/80 mb-10 max-w-2xl mx-auto">
+              SAASHELYN embodies the pursuit of permanence through the art of fine tailoring and quiet luxury. Every piece is designed to drape beautifully, move gracefully, and empower the modern woman who embraces modest fashion without compromising on style.
+            </p>
+            <Link href="/about">
+              <Button variant="outline" className="tracking-widest uppercase font-light rounded-none">
+                Discover Our Story
+              </Button>
+            </Link>
+          </div>
+        </FadeIn>
       </section>
 
       {/* Best Sellers */}
       {bestSellers.length > 0 && (
         <section className="py-24 px-4 md:px-8 bg-background">
-          <div className="container mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-wide mb-4">Best Sellers</h2>
-              <p className="font-light tracking-wide text-muted-foreground uppercase text-sm">
-                Our most loved pieces
-              </p>
+          <FadeIn direction="up">
+            <div className="container mx-auto">
+              <div className="text-center mb-16">
+                <h2 className="font-heading text-3xl md:text-4xl font-normal tracking-wide mb-4">Best Sellers</h2>
+                <p className="font-light tracking-wide text-muted-foreground uppercase text-sm">
+                  Our most loved pieces
+                </p>
+              </div>
+              <ProductGrid products={bestSellers} />
             </div>
-            <ProductGrid products={bestSellers} />
-          </div>
+          </FadeIn>
         </section>
       )}
     </div>
