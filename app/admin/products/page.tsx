@@ -21,6 +21,7 @@ export default function AdminProducts() {
   const [stock, setStock] = useState("100");
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const fetchProducts = async () => {
     const res = await fetch(`${API_URL}/products`);
@@ -47,30 +48,31 @@ export default function AdminProducts() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg("");
     
     // Validasi
     if (name.trim().length < 3) {
-      alert("Nama produk minimal 3 karakter!");
+      setErrorMsg("Nama produk minimal 3 karakter!");
       return;
     }
     if (description.trim().length < 10) {
-      alert("Deskripsi produk minimal 10 karakter!");
+      setErrorMsg("Deskripsi produk minimal 10 karakter!");
       return;
     }
     if (!category) {
-      alert("Silakan pilih kategori produk!");
+      setErrorMsg("Silakan pilih kategori produk!");
       return;
     }
     if (parseInt(price) < 1000) {
-      alert("Harga produk minimal Rp 1.000!");
+      setErrorMsg("Harga produk minimal Rp 1.000!");
       return;
     }
     if (parseInt(stock) < 0) {
-      alert("Stok tidak boleh minus!");
+      setErrorMsg("Stok tidak boleh minus!");
       return;
     }
     if (file && file.name.toLowerCase().endsWith(".heic")) {
-      alert("Format gambar HEIC tidak didukung oleh browser. Tolong gunakan JPG atau PNG.");
+      setErrorMsg("Format gambar HEIC tidak didukung oleh browser. Tolong gunakan JPG atau PNG.");
       return;
     }
 
@@ -86,10 +88,14 @@ export default function AdminProducts() {
           headers: { Authorization: `Bearer ${token}` },
           body: formData
         });
-        if (!uploadRes.ok) throw new Error("Upload failed");
+        
+        if (!uploadRes.ok) {
+          const errData = await uploadRes.json();
+          throw new Error(errData.error || "Gagal mengupload gambar. Cek pengaturan Vercel.");
+        }
+        
         const uploadData = await uploadRes.json();
-        // Since we are running the backend separately, the URL should include the base URL
-        imageUrl = uploadData.url; // We'll fix backend to return absolute URL later
+        imageUrl = uploadData.url; 
       }
 
       const productPayload = {
@@ -99,7 +105,7 @@ export default function AdminProducts() {
         image: imageUrl,
         price: parseInt(price),
         stock: parseInt(stock),
-        sizes: ["S", "M", "L"] // Hardcoded for simplicity for now
+        sizes: ["S", "M", "L"] 
       };
 
       const res = await fetch(`${API_URL}/admin/products`, {
@@ -111,7 +117,10 @@ export default function AdminProducts() {
         body: JSON.stringify(productPayload)
       });
 
-      if (!res.ok) throw new Error("Failed to create product");
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to create product");
+      }
 
       setIsModalOpen(false);
       fetchProducts();
@@ -123,9 +132,9 @@ export default function AdminProducts() {
       setPrice("");
       setStock("100");
       setFile(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Error creating product");
+      setErrorMsg(err.message || "Error creating product");
     } finally {
       setIsSubmitting(false);
     }
@@ -193,6 +202,12 @@ export default function AdminProducts() {
               <X className="w-5 h-5" />
             </button>
             <h2 className="font-heading text-2xl mb-6">Add New Product</h2>
+            
+            {errorMsg && (
+              <div className="mb-6 p-4 border border-red-500/50 bg-red-500/10 text-red-500 text-sm font-light">
+                {errorMsg}
+              </div>
+            )}
             
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-2">
