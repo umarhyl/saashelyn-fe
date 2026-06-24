@@ -24,6 +24,11 @@ export default function CollectionPage() {
   );
 
   useEffect(() => {
+    setPage(1);
+    setProducts([]); // clear products when category changes to show skeleton
+  }, [selectedCategory]);
+
+  useEffect(() => {
     if (cachedProducts) {
       if (page === 1) {
         setProducts(cachedProducts);
@@ -38,11 +43,6 @@ export default function CollectionPage() {
       setHasMore(cachedProducts.length >= 8);
     }
   }, [cachedProducts, page]);
-
-  useEffect(() => {
-    setPage(1);
-    setProducts([]); // clear products when category changes to show skeleton
-  }, [selectedCategory]);
 
   const loadMore = () => {
     setPage(prev => prev + 1);
