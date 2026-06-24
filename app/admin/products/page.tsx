@@ -14,7 +14,6 @@ export default function AdminProducts() {
   const { token } = useAuth();
 
   // Form State
-  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -48,6 +47,33 @@ export default function AdminProducts() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validasi
+    if (name.trim().length < 3) {
+      alert("Nama produk minimal 3 karakter!");
+      return;
+    }
+    if (description.trim().length < 10) {
+      alert("Deskripsi produk minimal 10 karakter!");
+      return;
+    }
+    if (!category) {
+      alert("Silakan pilih kategori produk!");
+      return;
+    }
+    if (parseInt(price) < 1000) {
+      alert("Harga produk minimal Rp 1.000!");
+      return;
+    }
+    if (parseInt(stock) < 0) {
+      alert("Stok tidak boleh minus!");
+      return;
+    }
+    if (file && file.name.toLowerCase().endsWith(".heic")) {
+      alert("Format gambar HEIC tidak didukung oleh browser. Tolong gunakan JPG atau PNG.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       let imageUrl = "";
@@ -67,7 +93,6 @@ export default function AdminProducts() {
       }
 
       const productPayload = {
-        id,
         name,
         description,
         category,
@@ -92,7 +117,6 @@ export default function AdminProducts() {
       fetchProducts();
       
       // Reset form
-      setId("");
       setName("");
       setDescription("");
       setCategory("");
@@ -172,10 +196,6 @@ export default function AdminProducts() {
             
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Product ID (Unique)</label>
-                <Input required value={id} onChange={e => setId(e.target.value)} className="rounded-none border-border/50 bg-secondary/20 h-10 font-light" />
-              </div>
-              <div className="space-y-2">
                 <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Name</label>
                 <Input required value={name} onChange={e => setName(e.target.value)} className="rounded-none border-border/50 bg-secondary/20 h-10 font-light" />
               </div>
@@ -186,7 +206,18 @@ export default function AdminProducts() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Category</label>
-                  <Input required value={category} onChange={e => setCategory(e.target.value)} className="rounded-none border-border/50 bg-secondary/20 h-10 font-light" />
+                  <select 
+                    required 
+                    value={category} 
+                    onChange={e => setCategory(e.target.value)} 
+                    className="flex h-10 w-full rounded-none border border-border/50 bg-secondary/20 px-3 py-2 text-sm font-light ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="" disabled>Select Category</option>
+                    <option value="Dress">Dress</option>
+                    <option value="Outerwear">Outerwear</option>
+                    <option value="Skirt">Skirt</option>
+                    <option value="Blouse">Blouse</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Stock</label>
