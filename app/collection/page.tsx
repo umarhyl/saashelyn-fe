@@ -6,6 +6,7 @@ import { Category } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/api";
 import { FadeIn } from "@/components/ui/FadeIn";
+import useSWR from "swr";
 
 const CATEGORIES: Category[] = ["Dress", "Outerwear", "Skirt", "Blouse"];
 
@@ -15,42 +16,35 @@ export default function CollectionPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchProducts = async (cat: string, p: number, append = false) => {
-    let url = `${API_URL}/products?page=${p}&limit=8`;
-    if (cat !== "All") {
-      url += `&category=${cat}`;
-    }
-    
-    try {
-      const res = await fetch(url);
-      const resData = await res.json();
-      const newData = resData.data || [];
-      
-      if (append) {
-        setProducts(prev => [...prev, ...newData]);
+  const fetcher = (url: string) => fetch(url).then(res => res.json()).then(data => data.data || []);
+  
+  const { data: cachedProducts, error } = useSWR(
+    `${API_URL}/products?page=${page}&limit=8${selectedCategory !== "All" ? `&category=${selectedCategory}` : ""}`,
+    fetcher
+  );
+
+  useEffect(() => {
+    if (cachedProducts) {
+      if (page === 1) {
+        setProducts(cachedProducts);
       } else {
-        setProducts(newData);
+        setProducts(prev => {
+          // Prevent duplicates when appending
+          const existingIds = new Set(prev.map(p => p.id));
+          const newUnique = cachedProducts.filter((p: any) => !existingIds.has(p.id));
+          return [...prev, ...newUnique];
+        });
       }
-      
-      if (newData.length < 8) {
-        setHasMore(false);
-      } else {
-        setHasMore(true);
-      }
-    } catch (err) {
-      console.error(err);
+      setHasMore(cachedProducts.length >= 8);
     }
-  };
+  }, [cachedProducts, page]);
 
   useEffect(() => {
     setPage(1);
-    fetchProducts(selectedCategory, 1, false);
   }, [selectedCategory]);
 
   const loadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchProducts(selectedCategory, nextPage, true);
+    setPage(prev => prev + 1);
   };
 
   return (
