@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { fetchProducts } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
-
 export default async function Home() {
   const products = await fetchProducts();
   const featuredProducts = products.slice(0, 4);
