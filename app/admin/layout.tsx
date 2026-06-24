@@ -40,8 +40,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-64 p-8">
-        {children}
+      <main className="flex-1 md:ml-64 flex flex-col min-w-0">
+        {/* Mobile Admin Navigation */}
+        <div className="md:hidden bg-background border-b border-border/50 overflow-x-auto scrollbar-hide">
+          <nav className="flex w-full">
+            <Link href="/admin" className={`flex-1 text-center whitespace-nowrap px-4 py-4 text-xs tracking-widest uppercase transition-colors ${pathname === '/admin' ? 'border-b-2 border-foreground font-medium bg-secondary/5' : 'text-muted-foreground font-light'}`}>
+              Overview
+            </Link>
+            <Link href="/admin/products" className={`flex-1 text-center whitespace-nowrap px-4 py-4 text-xs tracking-widest uppercase transition-colors ${pathname === '/admin/products' ? 'border-b-2 border-foreground font-medium bg-secondary/5' : 'text-muted-foreground font-light'}`}>
+              Products
+            </Link>
+            <Link href="/admin/orders" className={`flex-1 text-center whitespace-nowrap px-4 py-4 text-xs tracking-widest uppercase transition-colors ${pathname === '/admin/orders' ? 'border-b-2 border-foreground font-medium bg-secondary/5' : 'text-muted-foreground font-light'}`}>
+              Orders
+            </Link>
+          </nav>
+        </div>
+        
+        <div className="p-4 md:p-8">
+          {children}
+        </div>
       </main>
     </div>
   );
