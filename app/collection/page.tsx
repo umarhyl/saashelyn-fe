@@ -18,7 +18,7 @@ export default function CollectionPage() {
 
   const fetcher = (url: string) => fetch(url).then(res => res.json()).then(data => data.data || []);
   
-  const { data: cachedProducts, error } = useSWR(
+  const { data: cachedProducts, error, isLoading } = useSWR(
     `${API_URL}/products?page=${page}&limit=8${selectedCategory !== "All" ? `&category=${selectedCategory}` : ""}`,
     fetcher
   );
@@ -41,6 +41,7 @@ export default function CollectionPage() {
 
   useEffect(() => {
     setPage(1);
+    setProducts([]); // clear products when category changes to show skeleton
   }, [selectedCategory]);
 
   const loadMore = () => {
@@ -88,9 +89,21 @@ export default function CollectionPage() {
           </div>
         </div>
 
-        {/* Product Grid */}
+        {/* Product Grid or Skeleton */}
         <FadeIn delay={0.2}>
-          <ProductGrid products={products} />
+          {isLoading && products.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="w-full aspect-[3/4] bg-secondary/30 mb-4" />
+                  <div className="h-4 bg-secondary/30 w-3/4 mb-2" />
+                  <div className="h-4 bg-secondary/30 w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <ProductGrid products={products} />
+          )}
         </FadeIn>
         
         {/* Load More */}

@@ -21,8 +21,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Initialize from localStorage if we wanted to, but for this prototype memory is fine.
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem("saashelyn_cart");
+    if (savedCart) {
+      try {
+        setItems(JSON.parse(savedCart));
+      } catch (err) {
+        console.error("Failed to parse cart from localStorage");
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Save to localStorage whenever items change
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem("saashelyn_cart", JSON.stringify(items));
+    }
+  }, [items, isInitialized]);
   const addItem = (product: Product, size: string, quantity: number) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id && i.size === size);

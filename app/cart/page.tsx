@@ -142,26 +142,7 @@ export default function CartPage() {
 
                 <Separator className="bg-border/50" />
 
-                {/* Payment Details */}
-                <div>
-                  <h3 className="font-heading text-xl mb-6">Payment Details</h3>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Card Number</label>
-                      <Input placeholder="0000 0000 0000 0000" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light tracking-widest" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">Expiry Date</label>
-                        <Input placeholder="MM / YY" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light tracking-widest" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] tracking-widest uppercase font-medium text-muted-foreground">CVC</label>
-                        <Input placeholder="000" className="rounded-none border-border/50 bg-secondary/20 h-12 font-light tracking-widest" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
 
                 <Button 
                   size="lg" 
