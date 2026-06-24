@@ -14,7 +14,8 @@ import { API_URL } from "@/lib/api";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, subtotal, clearCart } = useCart();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated, token, user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const router = useRouter();
   const shippingCost = items.length > 0 ? 50000 : 0;
   const total = subtotal + shippingCost;
@@ -162,8 +163,13 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Button size="lg" className="w-full rounded-none h-14 uppercase tracking-widest font-light" type="submit">
-                  {isAuthenticated ? "Complete Purchase" : "Sign In to Complete Purchase"}
+                <Button 
+                  size="lg" 
+                  className="w-full rounded-none h-14 uppercase tracking-widest font-light" 
+                  type="submit"
+                  disabled={isAdmin}
+                >
+                  {isAdmin ? "Admins Cannot Checkout" : (isAuthenticated ? "Complete Purchase" : "Sign In to Complete Purchase")}
                 </Button>
               </form>
             </div>
