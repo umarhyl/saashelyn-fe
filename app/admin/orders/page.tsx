@@ -1,25 +1,27 @@
 "use client";
 
+import useSWR from "swr";
 import { useState, useEffect } from "react";
 import { API_URL } from "@/lib/api";
 import { useAuth } from "@/components/auth/AuthContext";
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<any[]>([]);
   const { token } = useAuth();
+  
+  const { data: ordersData, error, isLoading, mutate } = useSWR(
+    token ? ["admin-orders", token] : null,
+    async () => {
+      const res = await fetch(`${API_URL}/admin/orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to fetch orders");
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
+    { refreshInterval: 10000 }
+  );
 
-  const fetchOrders = async () => {
-    if (!token) return;
-    const res = await fetch(`${API_URL}/admin/orders`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    setOrders(Array.isArray(data) ? data : []);
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, [token]);
+  const orders = ordersData || [];
 
   const updateStatus = async (id: number, status: string) => {
     try {
@@ -31,7 +33,7 @@ export default function AdminOrders() {
         },
         body: JSON.stringify({ status })
       });
-      fetchOrders();
+      mutate();
     } catch (err) {
       console.error(err);
     }
@@ -79,7 +81,10 @@ export default function AdminOrders() {
                 <td className="px-6 py-4">{new Date(o.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
-            {orders.length === 0 && (
+            {isLoading && !ordersData && (
+              <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground animate-pulse">Loading orders...</td></tr>
+            )}
+            {!isLoading && orders.length === 0 && (
               <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">No orders found.</td></tr>
             )}
           </tbody>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import useSWR from "swr";
+import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthContext";
 import { API_URL } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Trash2, X } from "lucide-react";
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterCategory, setFilterCategory] = useState("All");
   const { token } = useAuth();
@@ -23,16 +23,17 @@ export default function AdminProducts() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const fetchProducts = async () => {
-    const res = await fetch(`${API_URL}/products`);
-    const json = await res.json();
-    // The backend returns { data: [...], meta: {...} }
-    setProducts(json.data || []);
-  };
+  const { data: productsData, error, isLoading, mutate } = useSWR(
+    "admin-products",
+    async () => {
+      const res = await fetch(`${API_URL}/products`);
+      const json = await res.json();
+      return json.data || [];
+    },
+    { refreshInterval: 10000 }
+  );
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const products = productsData || [];
 
   const handleDelete = async (productId: string) => {
     if (!confirm("Are you sure?")) return;
@@ -41,7 +42,7 @@ export default function AdminProducts() {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchProducts();
+      mutate();
     } catch (err) {
       console.error(err);
     }
@@ -124,7 +125,7 @@ export default function AdminProducts() {
       }
 
       setIsModalOpen(false);
-      fetchProducts();
+      mutate();
       
       // Reset form
       setName("");
@@ -141,7 +142,7 @@ export default function AdminProducts() {
     }
   };
 
-  const filteredProducts = filterCategory === "All" ? products : products.filter(p => p.category === filterCategory);
+  const filteredProducts = filterCategory === "All" ? products : products.filter((p: any) => p.category === filterCategory);
 
   return (
     <div>
@@ -189,7 +190,10 @@ export default function AdminProducts() {
                 </td>
               </tr>
             ))}
-            {filteredProducts.length === 0 && (
+            {isLoading && !productsData && (
+              <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground animate-pulse">Loading products...</td></tr>
+            )}
+            {!isLoading && filteredProducts.length === 0 && (
               <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">No products found.</td></tr>
             )}
           </tbody>
